@@ -58,6 +58,7 @@ Command::Command()
 	_inputFile = 0;
 	_errFile = 0;
 	_background = 0;
+	_append = 0;
 }
 
 void
@@ -102,6 +103,7 @@ Command:: clear()
 	_inputFile = 0;
 	_errFile = 0;
 	_background = 0;
+	_append = 0;
 }
 
 void
@@ -159,11 +161,15 @@ Command::execute()
 		if(_outFile || _inputFile || _errFile){
 
 			if(_outFile){
+				
+				if(! _append)
+					outfd = creat( _outFile, 0666);
 
-				outfd = creat( _outFile, 0666);
-
+				else 
+					outfd = open( _outFile, O_WRONLY | O_APPEND | O_CREAT , 0666);
+					
 				if(outfd < 0){
-					perror(" create output file");
+					perror(" create output file!");
 					exit(2);
 				}
 				dup2(outfd, 1);

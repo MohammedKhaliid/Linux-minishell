@@ -107,6 +107,7 @@ iomodifier_opt:
 	| iomodifier_opt APPEND WORD { // >> file
 		printf("   Yacc: insert append output \"%s\"\n", $3);
 		Command::_currentCommand._outFile = $3;
+		Command::_currentCommand._append = 1;
 	}
 	| iomodifier_opt ERRGREAT WORD { // &> file OR >& file
 		printf("   Yacc: insert output plus error \"%s\"\n", $3);
@@ -117,6 +118,7 @@ iomodifier_opt:
 		printf("   Yacc: insert append plus error \"%s\"\n", $3);
 		Command::_currentCommand._outFile = $3;
 		Command::_currentCommand._errFile = $3;
+		Command::_currentCommand._append = 1;
 	}
 	| /* can be empty */ 
 
