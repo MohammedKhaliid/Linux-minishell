@@ -102,11 +102,11 @@ iomodifier_opt:
 	}
 	| iomodifier_opt LESS WORD{
 		printf("   Yacc: insert input \"%s\"\n", $3);
-		// Command::_currentCommand._outFile = $2;
+		Command::_currentCommand._inputFile = $3;
 	}
 	| iomodifier_opt APPEND WORD {
 		printf("   Yacc: insert append output \"%s\"\n", $3);
-		// Command::_currentCommand._outFile = $2;
+		Command::_currentCommand._outFile = $3;
 	}
 	| /* can be empty */ 
 
@@ -115,7 +115,7 @@ iomodifier_opt:
 background:
 	BACKGROUND {
 		printf("   Yacc: backgroud processing\n");
-		// Command::_currentCommand._outFile = $2;
+		Command::_currentCommand._background = 1;
 	}
 	| /* can be empty */ 
 
