@@ -28,6 +28,15 @@
 		return GREAT;
 	}
 
+
+("&>" | ">&")	{
+		return ERRGREAT;
+	}
+
+"&>>"	{
+		return ERRAPPEND;
+	}
+
 "<" 	{
 		return LESS;
 	}

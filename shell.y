@@ -13,7 +13,7 @@
 
 %token	<string_val> WORD
 
-%token 	NOTOKEN GREAT LESS APPEND PIPE BACKGROUND NEWLINE
+%token 	NOTOKEN GREAT LESS APPEND ERRGREAT ERRAPPEND PIPE BACKGROUND NEWLINE
 
 %union	{
 		char   *string_val;
@@ -96,17 +96,27 @@ pipe_word:
 	}
 	;
 iomodifier_opt:
-	iomodifier_opt GREAT WORD {
+	iomodifier_opt GREAT WORD { // > file
 		printf("   Yacc: insert output \"%s\"\n", $3);
 		Command::_currentCommand._outFile = $3;
 	}
-	| iomodifier_opt LESS WORD{
+	| iomodifier_opt LESS WORD{ // < file
 		printf("   Yacc: insert input \"%s\"\n", $3);
 		Command::_currentCommand._inputFile = $3;
 	}
-	| iomodifier_opt APPEND WORD {
+	| iomodifier_opt APPEND WORD { // >> file
 		printf("   Yacc: insert append output \"%s\"\n", $3);
 		Command::_currentCommand._outFile = $3;
+	}
+	| iomodifier_opt ERRGREAT WORD { // &> file OR >& file
+		printf("   Yacc: insert output plus error \"%s\"\n", $3);
+		Command::_currentCommand._outFile = $3;
+		Command::_currentCommand._errFile = $3;
+	}
+	| iomodifier_opt ERRAPPEND WORD { // &>> file
+		printf("   Yacc: insert append plus error \"%s\"\n", $3);
+		Command::_currentCommand._outFile = $3;
+		Command::_currentCommand._errFile = $3;
 	}
 	| /* can be empty */ 
 
