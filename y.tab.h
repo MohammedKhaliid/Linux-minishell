@@ -57,7 +57,11 @@ extern int yydebug;
     WORD = 258,                    /* WORD  */
     NOTOKEN = 259,                 /* NOTOKEN  */
     GREAT = 260,                   /* GREAT  */
-    NEWLINE = 261                  /* NEWLINE  */
+    LESS = 261,                    /* LESS  */
+    APPEND = 262,                  /* APPEND  */
+    PIPE = 263,                    /* PIPE  */
+    BACKGROUND = 264,              /* BACKGROUND  */
+    NEWLINE = 265                  /* NEWLINE  */
   };
   typedef enum yytokentype yytoken_kind_t;
 #endif
@@ -69,7 +73,11 @@ extern int yydebug;
 #define WORD 258
 #define NOTOKEN 259
 #define GREAT 260
-#define NEWLINE 261
+#define LESS 261
+#define APPEND 262
+#define PIPE 263
+#define BACKGROUND 264
+#define NEWLINE 265
 
 /* Value type.  */
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
@@ -80,7 +88,7 @@ union YYSTYPE
 		char   *string_val;
 	
 
-#line 84 "y.tab.h"
+#line 92 "y.tab.h"
 
 };
 typedef union YYSTYPE YYSTYPE;

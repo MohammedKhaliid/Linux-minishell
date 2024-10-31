@@ -13,7 +13,7 @@
 
 %token	<string_val> WORD
 
-%token 	NOTOKEN GREAT NEWLINE 
+%token 	NOTOKEN GREAT LESS APPEND PIPE BACKGROUND NEWLINE
 
 %union	{
 		char   *string_val;
@@ -45,7 +45,7 @@ command: simple_command
         ;
 
 simple_command:	
-	command_and_args iomodifier_opt NEWLINE {
+	command_and_args pipe_list iomodifier_opt background NEWLINE {
 		printf("   Yacc: Execute command\n");
 		Command::_currentCommand.execute();
 	}
@@ -82,13 +82,42 @@ command_word:
 	}
 	;
 
+pipe_list:
+	pipe_list pipe
+	| /* can be empty */
+	;
+
+pipe:
+	pipe_word command_and_args 
+
+pipe_word:
+	PIPE {
+			printf("   Yacc: piping: \n");
+	}
+	;
 iomodifier_opt:
-	GREAT WORD {
+	iomodifier_opt GREAT WORD {
 		printf("   Yacc: insert output \"%s\"\n", $2);
 		Command::_currentCommand._outFile = $2;
 	}
+	| iomodifier_opt LESS WORD{
+		printf("   Yacc: insert input \"%s\"\n", $2);
+		// Command::_currentCommand._outFile = $2;
+	}
+	| iomodifier_opt APPEND WORD {
+		printf("   Yacc: insert append output \"%s\"\n", $2);
+		// Command::_currentCommand._outFile = $2;
+	}
 	| /* can be empty */ 
+
 	;
+
+background:
+	BACKGROUND {
+		printf("   Yacc: backgroud processing\n");
+		// Command::_currentCommand._outFile = $2;
+	}
+	| /* can be empty */ 
 
 %%
 
