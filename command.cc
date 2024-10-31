@@ -151,11 +151,11 @@ Command::execute()
 		int pid = fork();
 
 		if(pid == -1){
-			perror(" simple_command: fork\n");
+			perror("Failed to fork\n");
 			exit(2);
 		}
 
-		if(pid == 0){
+		else if(pid == 0){
 			//child
 			// printf("before execvp\n");
 			execvp(_simpleCommands[0]->_arguments[0], _simpleCommands[0]->_arguments);
@@ -164,13 +164,13 @@ Command::execute()
 			exit(2);
 		}
 
-		
-		
-		if(_background == 0)
-		{
-		// printf("before waitpid\n");
-			waitpid(pid, 0, 0);
-		// printf("after waitpid\n");
+		else{
+			if(_background == 0)
+			{
+			// printf("before waitpid\n");
+				waitpid(pid, 0, 0);
+			// printf("after waitpid\n");
+			}
 		}
 	}
 
