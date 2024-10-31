@@ -146,11 +146,43 @@ Command::execute()
 	// Setup i/o redirection
 	// and call exec
 
-	// Clear to prepare for next command
-	clear();
-	
-	// Print new prompt
-	prompt();
+	for ( int i = 0; i < _numberOfSimpleCommands; i++ ) {
+		
+		int pid = fork();
+
+		if(pid == -1){
+			perror(" simple_command: fork\n");
+			exit(2);
+		}
+
+		if(pid == 0){
+			//child
+			// printf("before execvp\n");
+			execvp(_simpleCommands[0]->_arguments[0], _simpleCommands[0]->_arguments);
+
+			perror( "	execution error: ");
+			exit(2);
+		}
+
+		
+		
+		if(_background == 0)
+		{
+		// printf("before waitpid\n");
+			waitpid(pid, 0, 0);
+		// printf("after waitpid\n");
+		}
+	}
+
+
+		// Clear to prepare for next command
+		
+		clear();
+		
+		// Print new prompt
+		prompt();
+
+
 }
 
 // Shell implementation
@@ -158,7 +190,7 @@ Command::execute()
 void
 Command::prompt()
 {
-	printf("myshell>");
+	printf("\033[31mmyshell>\033[0m");
 	fflush(stdout);
 }
 
