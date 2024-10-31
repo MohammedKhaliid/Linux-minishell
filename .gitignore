@@ -2,3 +2,4 @@
 *.tab.*
 shell
 command.o
+examples/
