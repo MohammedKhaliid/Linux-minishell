@@ -16,6 +16,7 @@
 #include <sys/wait.h>
 #include <string.h>
 #include <signal.h>
+#include <fcntl.h>
 
 #include "command.h"
 
@@ -148,6 +149,43 @@ Command::execute()
 
 	for ( int i = 0; i < _numberOfSimpleCommands; i++ ) {
 		
+		int defaultin = dup( 0 );
+		int defaultout = dup( 1 );
+		int defaulterr = dup( 2 ); 
+		int outfd = defaultout;
+		int infd = defaultin;
+		int errfd = defaulterr;
+
+		if(_outFile || _inputFile || _errFile){
+
+			if(_outFile){
+
+				outfd = creat( _outFile, 0666);
+
+				if(outfd < 0){
+					perror(" create output file");
+					exit(2);
+				}
+				dup2(outfd, 1);
+				close(outfd);
+			}
+			
+			if(_inputFile){
+				infd = open(_inputFile, O_RDWR);
+
+				if(infd < 0) {
+					perror(" error opening the input file");
+					exit(2);
+				}
+
+				dup2(infd, 0);
+				close(infd);
+			}
+
+		}
+
+
+
 		int pid = fork();
 
 		if(pid == -1){
@@ -158,13 +196,27 @@ Command::execute()
 		else if(pid == 0){
 			//child
 			// printf("before execvp\n");
+
+			close( defaultin );
+			close( defaultout );
+			close( defaulterr );
+
 			execvp(_simpleCommands[0]->_arguments[0], _simpleCommands[0]->_arguments);
 
 			perror( "	execution error: ");
 			exit(2);
 		}
 
-		else{
+		dup2( defaultin, 0 );
+		dup2( defaultout, 1 );
+		dup2( defaulterr, 2 );
+
+		close( outfd );
+		close( defaultin );
+		close( defaultout );
+		close( defaulterr );
+
+		if(pid > 0) {
 			if(_background == 0)
 			{
 			// printf("before waitpid\n");
