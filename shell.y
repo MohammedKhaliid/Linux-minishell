@@ -100,7 +100,7 @@ iomodifier_opt:
 		printf("   Yacc: insert output \"%s\"\n", $3);
 		Command::_currentCommand._outFile = $3;
 	}
-	| iomodifier_opt WrLESS WORD{
+	| iomodifier_opt LESS WORD{
 		printf("   Yacc: insert input \"%s\"\n", $3);
 		// Command::_currentCommand._outFile = $2;
 	}
