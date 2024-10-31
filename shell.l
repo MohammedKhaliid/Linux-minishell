@@ -29,7 +29,11 @@
 	}
 
 
-("&>" | ">&")	{
+"&>"	{
+		return ERRGREAT;
+	}
+
+">&"	{
 		return ERRGREAT;
 	}
 
