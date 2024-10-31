@@ -97,15 +97,15 @@ pipe_word:
 	;
 iomodifier_opt:
 	iomodifier_opt GREAT WORD {
-		printf("   Yacc: insert output \"%s\"\n", $2);
-		Command::_currentCommand._outFile = $2;
+		printf("   Yacc: insert output \"%s\"\n", $3);
+		Command::_currentCommand._outFile = $3;
 	}
-	| iomodifier_opt LESS WORD{
-		printf("   Yacc: insert input \"%s\"\n", $2);
+	| iomodifier_opt WrLESS WORD{
+		printf("   Yacc: insert input \"%s\"\n", $3);
 		// Command::_currentCommand._outFile = $2;
 	}
 	| iomodifier_opt APPEND WORD {
-		printf("   Yacc: insert append output \"%s\"\n", $2);
+		printf("   Yacc: insert append output \"%s\"\n", $3);
 		// Command::_currentCommand._outFile = $2;
 	}
 	| /* can be empty */ 
