@@ -94,9 +94,9 @@ Command:: clear()
 		free( _inputFile );
 	}
 
-	if ( _errFile ) {
-		free( _errFile );
-	}
+	// if ( _errFile ) {
+	// 	free( _errFile );
+	// }
 
 	_numberOfSimpleCommands = 0;
 	_outFile = 0;
@@ -156,7 +156,7 @@ Command::execute()
 		int defaulterr = dup( 2 ); 
 		int outfd = defaultout;
 		int infd = defaultin;
-		int errfd = defaulterr;
+		// int errfd = defaulterr;
 
 		if(_outFile || _inputFile || _errFile){
 
@@ -172,6 +172,11 @@ Command::execute()
 					perror(" create output file!");
 					exit(2);
 				}
+
+				if(_errFile){
+					dup2(outfd, 2);
+				}
+
 				dup2(outfd, 1);
 				close(outfd);
 			}
@@ -205,7 +210,7 @@ Command::execute()
 
 			close( defaultin );
 			close( defaultout );
-			close( defaulterr );
+			// close( defaulterr );
 
 			execvp(_simpleCommands[0]->_arguments[0], _simpleCommands[0]->_arguments);
 
