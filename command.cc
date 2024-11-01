@@ -174,18 +174,14 @@ void Command::execute()
 	for (int i = 0; i < _numberOfSimpleCommands; i++)
 	{
 
-		if (i == 0)
-		{
-			if (_inputFile)
+		if (i == 0 && _inputFile){
+
+			infd = open(_inputFile, O_RDONLY);
+
+			if (infd < 0)
 			{
-
-				infd = open(_inputFile, O_RDONLY);
-
-				if (infd < 0)
-				{
-					perror(" error opening the input file");
-					exit(2);
-				}
+				perror(" error opening the input file");
+				exit(2);
 			}
 			dup2(infd, 0);
 			close(infd);
@@ -213,17 +209,20 @@ void Command::execute()
 				if (_errFile)
 				{
 					dup2(outfd, 2);
+					close(outfd);
 				}
 
 				dup2(outfd, 1);
 				close(outfd);
 			}
-			else 
+			else {
 				dup2(defaultout, 1);
+			}
 		}
 
-		else
+		else {
 			dup2(fdpipes[i][1], 1);
+		}
 			
 
 		int pid = fork();
@@ -237,15 +236,13 @@ void Command::execute()
 		else if (pid == 0)
 		{
 			// child
-			//  printf("before execvp\n");
 
 			for (int j = 0; j < _numberOfSimpleCommands - 1; j++)
 			{
 				close(fdpipes[j][0]);
 				close(fdpipes[j][1]);
 			}
-
-			// printf("executing command: %s\n", _simpleCommands[i]->_arguments[0]);
+			
 			execvp(_simpleCommands[i]->_arguments[0], _simpleCommands[i]->_arguments);
 
 			perror("	execution error: ");
@@ -260,14 +257,14 @@ void Command::execute()
 		}
 	}
 
-	dup2(defaultin, 0);
-	dup2(defaultout, 1);
-	dup2(defaulterr, 2);
-
-	for (int i = 0; i < _numberOfSimpleCommands; i++)
+	for (int i = 0; i < _numberOfSimpleCommands ; i++)
 	{
 		wait(0);
 	}
+
+	dup2(defaultin, 0);
+	dup2(defaultout, 1);
+	dup2(defaulterr, 2);
 
 	close(defaultin);
 	close(defaultout);
