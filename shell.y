@@ -13,7 +13,7 @@
 
 %token	<string_val> WORD
 
-%token 	NOTOKEN GREAT LESS APPEND ERRGREAT ERRAPPEND PIPE BACKGROUND NEWLINE
+%token 	NOTOKEN GREAT LESS APPEND ERRGREAT ERRAPPEND PIPE BACKGROUND NEWLINE EXIT
 
 %union	{
 		char   *string_val;
@@ -48,6 +48,9 @@ simple_command:
 	command_and_args pipe_list iomodifier_opt background NEWLINE {
 		printf("   Yacc: Execute command\n");
 		Command::_currentCommand.execute();
+	}
+	| EXIT NEWLINE{
+		Command::_currentCommand.exitt();
 	}
 	| NEWLINE 
 	| error NEWLINE { yyerrok; }

@@ -135,6 +135,11 @@ void Command::print()
 	printf("\n\n");
 }
 
+void Command::exitt(){
+	printf("  Good bye!!\n");
+	exit(0);
+}
+
 void Command::execute()
 {
 	// Don't do anything if there are no simple commands
@@ -250,16 +255,17 @@ void Command::execute()
 		}
 		else
 		{
-			if (i > 0)
+			if (i > 0){
 				close(fdpipes[i - 1][0]);
-			if (i < _numberOfSimpleCommands - 1)
+			}
+			if (i < _numberOfSimpleCommands - 1){
 				close(fdpipes[i][1]);
-		}
-	}
+			}
 
-	for (int i = 0; i < _numberOfSimpleCommands ; i++)
-	{
-		wait(0);
+			if(_background == 0) {
+				waitpid(pid, 0, 0);
+			}
+		}
 	}
 
 	dup2(defaultin, 0);
@@ -274,6 +280,11 @@ void Command::execute()
 
 	// Print new prompt
 	prompt();
+}
+
+void sigint_handler(int sig){
+	printf("\n");
+	Command::_currentCommand.prompt();
 }
 
 // Shell implementation
@@ -291,6 +302,8 @@ int yyparse(void);
 
 int main()
 {
+	signal(SIGINT, sigint_handler);
+
 	Command::_currentCommand.prompt();
 	yyparse();
 	return 0;
