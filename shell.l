@@ -61,7 +61,24 @@
 		return EXIT;
 }
 
-[^ \t\n][^ \t\n]*  {
+"cd"	{
+		return CDIR;
+}
+
+\'[^\']*\'	{
+		yylval.string_val = strdup(yytext + 1); 
+		yylval.string_val[strlen(yylval.string_val) - 1] = '\0'; 
+		return PATH;
+}
+
+\"[^\"]*\"	{
+		yylval.string_val = strdup(yytext + 1); 
+		yylval.string_val[strlen(yylval.string_val) - 1] = '\0'; 
+		return PATH;
+}
+
+
+[^ &<>|\"\t\n][^ &<>|\"\t\n]*  {
 		/* Assume that file names have only alpha chars */
 		yylval.string_val = strdup(yytext);
 		return WORD;

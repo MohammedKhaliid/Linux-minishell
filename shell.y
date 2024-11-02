@@ -12,8 +12,9 @@
  */
 
 %token	<string_val> WORD
+%token	<string_val> PATH
 
-%token 	NOTOKEN GREAT LESS APPEND ERRGREAT ERRAPPEND PIPE BACKGROUND NEWLINE EXIT
+%token 	NOTOKEN GREAT LESS APPEND ERRGREAT ERRAPPEND PIPE BACKGROUND NEWLINE EXIT CDIR
 
 %union	{
 		char   *string_val;
@@ -48,6 +49,22 @@ simple_command:
 	command_and_args pipe_list iomodifier_opt background NEWLINE {
 		printf("   Yacc: Execute command\n");
 		Command::_currentCommand.execute();
+	}
+	| CDIR WORD NEWLINE {
+		printf("   Yacc: Change directory\n");
+		Command::_currentCommand._currentDir = $2;
+		Command::_currentCommand.change_dir();
+	}
+	| CDIR PATH NEWLINE{
+		printf("   Yacc: Change directory\n");
+		printf(" the path: %s\n", $2);
+		Command::_currentCommand._currentDir = $2;
+		Command::_currentCommand.change_dir();
+	}
+	| CDIR NEWLINE {
+		printf("   Yacc: Change directory\n");
+		Command::_currentCommand._currentDir = NULL;
+		Command::_currentCommand.change_dir();
 	}
 	| EXIT NEWLINE{
 		Command::_currentCommand.exitt();
