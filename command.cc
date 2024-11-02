@@ -20,12 +20,47 @@
 
 #include "command.h"
 
+#include <time.h>
+
+void log_child_termination(int pid, int status) {
+    FILE *logFile;
+    logFile = fopen("log.txt", "a");
+    if (!logFile) {
+        perror("Failed to open log file");
+        return;
+    }
+
+
+	time_t current_time = time(NULL);
+	fprintf(logFile, "Child process %d terminated at %s", pid, ctime(&current_time));
+	
+	if (WIFEXITED(status)) {
+		fprintf(logFile, " - Exit status: %d\n", WEXITSTATUS(status));
+	} 
+	else if (WIFSIGNALED(status)) {
+		fprintf(logFile, " - Terminated by signal: %d\n", WTERMSIG(status));
+	}
+
+    
+    fclose(logFile);
+}
+
+void child_signal_handler(int sig) {
+    pid_t pid;
+    int status;
+
+        while ((pid = waitpid(-1, &status, WNOHANG)) > 0) {
+        		log_child_termination(pid, status);
+    }
+}
+
 SimpleCommand::SimpleCommand()
 {
 	// Creat available space for 5 arguments
 	_numberOfAvailableArguments = 5;
 	_numberOfArguments = 0;
 	_arguments = (char **)malloc(_numberOfAvailableArguments * sizeof(char *));
+	signal(SIGCHLD, child_signal_handler);
 }
 
 void SimpleCommand::insertArgument(char *argument)
@@ -265,6 +300,7 @@ void Command::execute()
 
 			if(_background == 0) {
 				waitpid(pid, 0, 0);
+				log_child_termination(pid, 0);
 			}
 		}
 	}
