@@ -22,6 +22,7 @@ struct Command {
 	char * _outFile;
 	char * _inputFile;
 	char * _errFile;
+	char *_currentDir;
 	int _background;
 	int _append;
 
@@ -30,6 +31,7 @@ struct Command {
 	void execute();
 	void clear();
 	void exitt();
+	void change_dir();
 	
 	Command();
 	void insertSimpleCommand( SimpleCommand * simpleCommand );

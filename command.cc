@@ -59,6 +59,7 @@ Command::Command()
 	_errFile = 0;
 	_background = 0;
 	_append = 0;
+	_currentDir = NULL;
 }
 
 void Command::insertSimpleCommand(SimpleCommand *simpleCommand)
@@ -293,6 +294,29 @@ void Command::prompt()
 {
 	printf("\033[31mmyshell>\033[0m");
 	fflush(stdout);
+}
+
+void Command::change_dir(){
+	char cwd[900];
+
+	char *homeDir = getenv("HOME");
+
+	if(_currentDir == NULL) _currentDir = homeDir;
+
+	if(chdir(Command::_currentCommand._currentDir) == -1){
+		perror(" faild to change directory: ");
+		Command::_currentCommand._currentDir = (char*)".";
+	}
+
+	if(getcwd(cwd, sizeof(cwd)) != NULL){
+		printf("current directory: %s\n", cwd);
+	}
+	else{
+		perror("");
+	}
+
+	prompt();
+
 }
 
 Command Command::_currentCommand;
