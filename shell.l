@@ -84,10 +84,4 @@
 		return WORD;
 	}
 
-.	{
-		/* Invalid character in input */
-		return NOTOKEN;
-	}
-
 %%
-	
