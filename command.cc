@@ -24,7 +24,8 @@
 
 void log_child_termination(int pid, int status) {
     FILE *logFile;
-    logFile = fopen("log.txt", "a");
+	char logFilePath[] = "/mnt/sda1/University/Level 3/Subj/Term 7/Operating Systems/Labs/lab3/lab3-src/lab2-src/log.txt";
+    logFile = fopen(logFilePath, "a");
     if (!logFile) {
         perror("Failed to open log file");
         return;
@@ -46,7 +47,7 @@ void log_child_termination(int pid, int status) {
 }
 
 void child_signal_handler(int sig) {
-    pid_t pid;
+    int pid;
     int status;
 
         while ((pid = waitpid(-1, &status, WNOHANG)) > 0) {
@@ -299,8 +300,9 @@ void Command::execute()
 			}
 
 			if(_background == 0) {
-				waitpid(pid, 0, 0);
-				log_child_termination(pid, 0);
+				int status;
+				waitpid(pid, &status, 0);
+				log_child_termination(pid,status);
 			}
 		}
 	}
@@ -328,13 +330,19 @@ void sigint_handler(int sig){
 
 void Command::prompt()
 {
-	printf("\033[31mmyshell>\033[0m");
+	char cwd[900];
+
+	printf("\033[31mmyshell:\033[0m");
+	if(getcwd(cwd, sizeof(cwd)) != NULL){
+		printf("\x1b[32m%s\x1b[0m$ ", cwd);
+	}
+	else{
+		perror("");
+	}
 	fflush(stdout);
 }
 
 void Command::change_dir(){
-	char cwd[900];
-
 	char *homeDir = getenv("HOME");
 
 	if(_currentDir == NULL) _currentDir = homeDir;
@@ -342,13 +350,6 @@ void Command::change_dir(){
 	if(chdir(Command::_currentCommand._currentDir) == -1){
 		perror(" faild to change directory: ");
 		Command::_currentCommand._currentDir = (char*)".";
-	}
-
-	if(getcwd(cwd, sizeof(cwd)) != NULL){
-		printf("current directory: %s\n", cwd);
-	}
-	else{
-		perror("");
 	}
 
 	prompt();
