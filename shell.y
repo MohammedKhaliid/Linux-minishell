@@ -48,26 +48,29 @@ command: simple_command
 simple_command:	
 	command_and_args pipe_list iomodifier_opt background NEWLINE {
 		printf("   Yacc: Execute command\n");
+
 		Command::_currentCommand.execute();
 	}
 	| CDIR WORD NEWLINE {
 		printf("   Yacc: Change directory\n");
+
 		Command::_currentCommand._currentDir = $2;
 		Command::_currentCommand.change_dir();
 	}
 	| CDIR PATH NEWLINE{
 		printf("   Yacc: Change directory\n");
-		printf(" the path: %s\n", $2);
+
 		Command::_currentCommand._currentDir = $2;
 		Command::_currentCommand.change_dir();
 	}
 	| CDIR NEWLINE {
 		printf("   Yacc: Change directory\n");
+
 		Command::_currentCommand._currentDir = NULL;
 		Command::_currentCommand.change_dir();
 	}
 	| EXIT NEWLINE{
-		Command::_currentCommand.exitt();
+		Command::_currentCommand.exitshell();
 	}
 	| NEWLINE 
 	| error NEWLINE { yyerrok; }
@@ -112,30 +115,35 @@ pipe:
 
 pipe_word:
 	PIPE {
-			printf("   Yacc: piping: \n");
+			printf("   Yacc: piping\n");
 	}
 	;
 iomodifier_opt:
 	iomodifier_opt GREAT WORD { // > file
 		printf("   Yacc: insert output \"%s\"\n", $3);
+		
 		Command::_currentCommand._outFile = $3;
 	}
 	| iomodifier_opt LESS WORD{ // < file
 		printf("   Yacc: insert input \"%s\"\n", $3);
+		
 		Command::_currentCommand._inputFile = $3;
 	}
 	| iomodifier_opt APPEND WORD { // >> file
 		printf("   Yacc: insert append output \"%s\"\n", $3);
+		
 		Command::_currentCommand._outFile = $3;
 		Command::_currentCommand._append = 1;
 	}
 	| iomodifier_opt ERRGREAT WORD { // &> file OR >& file
 		printf("   Yacc: insert output plus error \"%s\"\n", $3);
+		
 		Command::_currentCommand._outFile = $3;
 		Command::_currentCommand._errFile = $3;
 	}
 	| iomodifier_opt ERRAPPEND WORD { // &>> file
 		printf("   Yacc: insert append plus error \"%s\"\n", $3);
+		
 		Command::_currentCommand._outFile = $3;
 		Command::_currentCommand._errFile = $3;
 		Command::_currentCommand._append = 1;

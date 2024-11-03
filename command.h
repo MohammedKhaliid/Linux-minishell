@@ -30,7 +30,7 @@ struct Command {
 	void print();
 	void execute();
 	void clear();
-	void exitt();
+	void exitshell();
 	void change_dir();
 	
 	Command();

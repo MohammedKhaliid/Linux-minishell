@@ -1,12 +1,6 @@
 
 /*
  * CS354: Shell project
- *
- * Template file.
- * You will need to add more code here to execute the command table.
- *
- * NOTE: You are responsible for fixing any bugs this code may have!
- *
  */
 
 #include <stdio.h>
@@ -22,37 +16,43 @@
 
 #include <time.h>
 
-void log_child_termination(int pid, int status) {
-    FILE *logFile;
+void log_child_termination(int pid, int status)
+{
+	FILE *logFile;
+	//change the path here
 	char logFilePath[] = "/mnt/sda1/University/Level 3/Subj/Term 7/Operating Systems/Labs/lab3/lab3-src/lab2-src/log.txt";
-    logFile = fopen(logFilePath, "a");
-    if (!logFile) {
-        perror("Failed to open log file");
-        return;
-    }
-
+	logFile = fopen(logFilePath, "a");
+	
+	if (!logFile)
+	{
+		perror("Failed to open log file");
+		return;
+	}
 
 	time_t current_time = time(NULL);
 	fprintf(logFile, "Child process %d terminated at %s", pid, ctime(&current_time));
-	
-	if (WIFEXITED(status)) {
+
+	if (WIFEXITED(status))
+	{
 		fprintf(logFile, " - Exit status: %d\n", WEXITSTATUS(status));
-	} 
-	else if (WIFSIGNALED(status)) {
+	}
+	else if (WIFSIGNALED(status))
+	{
 		fprintf(logFile, " - Terminated by signal: %d\n", WTERMSIG(status));
 	}
 
-    
-    fclose(logFile);
+	fclose(logFile);
 }
 
-void child_signal_handler(int sig) {
-    int pid;
-    int status;
+void child_signal_handler(int sig)
+{
+	int pid;
+	int status;
 
-        while ((pid = waitpid(-1, &status, WNOHANG)) > 0) {
-        		log_child_termination(pid, status);
-    }
+	while ((pid = waitpid(-1, &status, WNOHANG)) > 0)
+	{
+		log_child_termination(pid, status);
+	}
 }
 
 SimpleCommand::SimpleCommand()
@@ -172,7 +172,8 @@ void Command::print()
 	printf("\n\n");
 }
 
-void Command::exitt(){
+void Command::exitshell()
+{
 	printf("  Good bye!!\n");
 	exit(0);
 }
@@ -188,11 +189,6 @@ void Command::execute()
 
 	// Print contents of Command data structure
 	print();
-
-	// Add execution here
-	// For every simple command fork a new process
-	// Setup i/o redirection
-	// and call exec
 
 	int defaultin = dup(0);
 	int defaultout = dup(1);
@@ -216,7 +212,8 @@ void Command::execute()
 	for (int i = 0; i < _numberOfSimpleCommands; i++)
 	{
 
-		if (i == 0 && _inputFile){
+		if (i == 0 && _inputFile)
+		{
 
 			infd = open(_inputFile, O_RDONLY);
 
@@ -257,15 +254,16 @@ void Command::execute()
 				dup2(outfd, 1);
 				close(outfd);
 			}
-			else {
+			else
+			{
 				dup2(defaultout, 1);
 			}
 		}
 
-		else {
+		else
+		{
 			dup2(fdpipes[i][1], 1);
 		}
-			
 
 		int pid = fork();
 
@@ -284,7 +282,7 @@ void Command::execute()
 				close(fdpipes[j][0]);
 				close(fdpipes[j][1]);
 			}
-			
+
 			execvp(_simpleCommands[i]->_arguments[0], _simpleCommands[i]->_arguments);
 
 			perror("	execution error: ");
@@ -292,17 +290,20 @@ void Command::execute()
 		}
 		else
 		{
-			if (i > 0){
+			if (i > 0)
+			{
 				close(fdpipes[i - 1][0]);
 			}
-			if (i < _numberOfSimpleCommands - 1){
+			if (i < _numberOfSimpleCommands - 1)
+			{
 				close(fdpipes[i][1]);
 			}
 
-			if(_background == 0) {
+			if (_background == 0)
+			{
 				int status;
 				waitpid(pid, &status, 0);
-				log_child_termination(pid,status);
+				log_child_termination(pid, status);
 			}
 		}
 	}
@@ -321,7 +322,8 @@ void Command::execute()
 	prompt();
 }
 
-void sigint_handler(int sig){
+void sigint_handler(int sig)
+{
 	printf("\n");
 	Command::_currentCommand.prompt();
 }
@@ -332,28 +334,36 @@ void Command::prompt()
 {
 	char cwd[900];
 
-	printf("\033[31mmyshell:\033[0m");
-	if(getcwd(cwd, sizeof(cwd)) != NULL){
-		printf("\x1b[32m%s\x1b[0m$ ", cwd);
+	printf("\033[31mmyshell:\033[0m"); // color: red
+
+	if (getcwd(cwd, sizeof(cwd)) != NULL)
+	{
+
+		printf("\x1b[32m%s\x1b[0m$ ", cwd); // color: blue
 	}
-	else{
+
+	else
+	{
 		perror("");
 	}
+
 	fflush(stdout);
 }
 
-void Command::change_dir(){
+void Command::change_dir()
+{
 	char *homeDir = getenv("HOME");
 
-	if(_currentDir == NULL) _currentDir = homeDir;
+	if (_currentDir == NULL)
+		_currentDir = homeDir;
 
-	if(chdir(Command::_currentCommand._currentDir) == -1){
-		perror(" faild to change directory: ");
-		Command::_currentCommand._currentDir = (char*)".";
+	if (chdir(Command::_currentCommand._currentDir) == -1)
+	{
+		perror(" Failed to change directory: ");
+		Command::_currentCommand._currentDir = (char *)".";
 	}
 
 	prompt();
-
 }
 
 Command Command::_currentCommand;
