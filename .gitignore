@@ -1,5 +1,7 @@
-*.yy.*
-*.tab.*
-shell
-command.o
-examples/
+*
+
+!Makefile
+!shell.y
+!shell.l
+!command.cc
+!command.h
