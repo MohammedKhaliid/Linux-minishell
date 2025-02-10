@@ -279,8 +279,8 @@ void Command::execute()
 
 			for (int j = 0; j < _numberOfSimpleCommands - 1; j++)
 			{
-				close(fdpipes[j][0]);
-				close(fdpipes[j][1]);
+				// close(fdpipes[j][0]);
+				// close(fdpipes[j][1]);
 			}
 
 			execvp(_simpleCommands[i]->_arguments[0], _simpleCommands[i]->_arguments);

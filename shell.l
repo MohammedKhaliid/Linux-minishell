@@ -41,6 +41,9 @@
 		return ERRAPPEND;
 	}
 
+">>&"	{
+		return ERRAPPEND;
+	}
 "<" 	{
 		return LESS;
 	}
